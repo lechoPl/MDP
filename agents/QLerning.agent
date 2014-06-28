@@ -1,0 +1,132 @@
+package userCode;
+
+import enums.Action;
+import java.util.Random;
+import world.State;
+import world.WorldSim;
+
+public class QLerning implements IAgent {
+
+    protected WorldSim world;
+
+    protected double discount = 1;
+    protected double epsilon = 0.05;
+
+    protected Random rand = new Random();
+
+    protected Double[][][] Q;
+    protected Integer[][][] N;
+    protected State previousState = null;
+    protected Action previousAction = null;
+    protected Double previousReward = null;
+
+    @Override
+    public void setWorldSimulator(WorldSim simulator) {
+        world = simulator;
+
+        Q = new Double[world.getN()][world.getM()][world.getActions().length];
+        N = new Integer[world.getN()][world.getM()][world.getActions().length];
+
+        previousState = null;
+        previousAction = null;
+        previousReward = null;
+    }
+
+    protected Action getBestAction(State s) {
+        Action bestAction = null;
+        Double max = null;
+        
+        for( Action act : world.getActions()) {
+                
+            Double val = Q[s.getX()][s.getY()][act.ordinal()];
+            if(val == null)
+                val = 0.0;
+            
+            if(max == null || val > max) {
+                max = val;
+                bestAction = act;
+            }
+            
+        }
+
+        return bestAction != null ? bestAction : world.getActions()[rand.nextInt(world.getActions().length)];
+    }
+
+    protected Double maxQ(State s) {
+        Double max = null;
+
+        for (int i = 0; i < world.getActions().length; i++) {
+            if(Q[s.getX()][s.getY()][i] == null)
+                continue;
+            
+            if (max == null || Q[s.getX()][s.getY()][i] > max) {
+                max = Q[s.getX()][s.getY()][i];
+            }
+        }
+
+        return max != null ? max : 0;
+    }
+
+    @Override
+    public void step() {
+        if (world.isTermina(world.getCurrentState())) {
+            world.reset();
+        }
+
+        Action a;
+
+        if (epsilon <= rand.nextDouble()) {
+            a = world.getActions()[rand.nextInt(world.getActions().length)];
+        } else {
+            a = getBestAction(world.getCurrentState());
+        }
+
+        previousState = world.getCurrentState();
+        previousReward = world.getCurrentReward();
+        world.executeAction(a);
+
+        if( N[previousState.getX()][previousState.getY()][a.ordinal()] == null) {
+            N[previousState.getX()][previousState.getY()][a.ordinal()] = 0;
+        }
+        N[previousState.getX()][previousState.getY()][a.ordinal()] += 1;
+        
+        if(Q[previousState.getX()][previousState.getY()][a.ordinal()] == null) {
+            Q[previousState.getX()][previousState.getY()][a.ordinal()] = 0.0;
+        }
+        Q[previousState.getX()][previousState.getY()][a.ordinal()]
+                += (1.0 / (N[previousState.getX()][previousState.getY()][a.ordinal()]))
+                * (previousReward + discount * maxQ(world.getCurrentState()) - Q[previousState.getX()][previousState.getY()][a.ordinal()]);
+
+        previousState = world.getCurrentState();
+
+        if (world.isTermina(world.getCurrentState())) {
+            for (int i = 0; i < world.getActions().length; i++) {
+                Q[world.getCurrentState().getX()][world.getCurrentState().getY()][i] = world.getCurrentReward();
+            }
+        }
+
+    }
+
+    @Override
+    public void setDiscount(double val) {
+        discount = val;
+    }
+
+    @Override
+    public double getUsability(State s) {
+        return maxQ(s);
+    }
+
+    @Override
+    public void iterate() {
+
+        if (world.isTermina(world.getCurrentState())) {
+            step();
+        }
+
+        while (!world.isTermina(world.getCurrentState())) {
+            step();
+        }
+    }
+
+}

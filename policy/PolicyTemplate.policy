@@ -1,0 +1,29 @@
+package userCode;
+
+import world.State;
+import world.WorldForPolicy;
+
+
+public class MyPolicy implements IPolicy {
+
+    @Override
+    public void setWorldForPolicy(WorldForPolicy worldForPolicy) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setDiscount(double val) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public double getUsability(State s) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void iterate() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+}
