@@ -56,7 +56,7 @@ public class MainFrame extends JFrame {
     protected JSplitPane mainSplitPane = new JSplitPane();
     protected WorldPanel worldPanel = new WorldPanel();
 
-    protected CustomTabbedPanel leftPanel = new CustomTabbedPanel(this);
+    protected LeftPanel leftPanel = new LeftPanel(this);
 
     protected JTextPane output = new JTextPane();
     protected JPanel outputPanel;
@@ -69,7 +69,7 @@ public class MainFrame extends JFrame {
     public MainFrame() {
 
         this.setTitle(frameTitle);
-        this.setSize(800, 600);
+        this.setSize(1024, 768);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         this.setVisible(true);
@@ -252,16 +252,12 @@ public class MainFrame extends JFrame {
     public void setWorld(World w) {
         logic.setWorld(w);
 
-        leftPanel.setWorldName(w.getName());
+        leftPanel.setWorldInfo(w);
         worldPanel.setLogic(logic);
 
         leftPanel.setIterationCountLabel(String.valueOf(logic.GetUsabilityHistory().size()));
         storedPolicyLabel.setText(storedPolicyPrefix);
         storedUsabilityLabel.setText(storedUsabilityPrefix);
-    }
-
-    public static void main(String[] argc) {
-        new MainFrame();
     }
 
     public World getWorld() {
@@ -394,5 +390,9 @@ public class MainFrame extends JFrame {
         logic.StoreUsability();
 
         storedUsabilityLabel.setText(storedUsabilityPrefix + leftPanel.getAlgorithmName());
+    }
+
+    public static void main(String[] argc) {
+        new MainFrame();
     }
 }

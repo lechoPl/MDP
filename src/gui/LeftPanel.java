@@ -26,8 +26,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.NumberFormatter;
+import world.World;
 
-public class CustomTabbedPanel extends JPanel {
+public class LeftPanel extends JPanel {
 
     MainFrame frame;
 
@@ -36,6 +37,9 @@ public class CustomTabbedPanel extends JPanel {
 
     protected JList worldList;
     protected JLabel worldName;
+    protected JLabel aWorld;
+    protected JLabel bWorld;
+    protected JLabel rWorld;
     protected JLabel algorithmName;
     protected JLabel iterationCoutLabel;
 
@@ -56,7 +60,10 @@ public class CustomTabbedPanel extends JPanel {
     protected JSpinner agentStepSpinner;
     protected JSpinner agentIterateSpinner;
 
-    public CustomTabbedPanel(MainFrame f) {
+    protected JPanel worldInfoPanel;
+    protected JPanel algorithmInfoPanel;
+
+    public LeftPanel(MainFrame f) {
         frame = f;
 
         this.setLayout(new BorderLayout(5, 5));
@@ -65,78 +72,15 @@ public class CustomTabbedPanel extends JPanel {
         initAlgorithmTab();
         initWorldTab();
 
-        GridLayout propertiesLayout = new GridLayout(5, 2);
-        propertiesLayout.setHgap(10);
-        JPanel propertiesPanel = new JPanel(propertiesLayout);
-        propertiesPanel.setBorder(new EmptyBorder(3, 3, 3, 3));
+        initWorldInfoPanel();
 
-        JLabel worldLabel = new JLabel("World");
-        worldLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-
-        worldName = new JLabel();
-        propertiesPanel.add(worldLabel);
-        propertiesPanel.add(worldName);
-
-        JLabel algorithmLabel = new JLabel("Algorithm");
-        algorithmLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-
-        algorithmName = new JLabel();
-        propertiesPanel.add(algorithmLabel);
-        propertiesPanel.add(algorithmName);
-        
-        JLabel iterationLabel = new JLabel("Iteration");
-        iterationLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        
-        iterationCoutLabel = new JLabel();
-        propertiesPanel.add(iterationLabel);
-        propertiesPanel.add(iterationCoutLabel);
-
-        JLabel discountLabel = new JLabel("Discount");
-        discountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        propertiesPanel.add(discountLabel);
-
-        SpinnerNumberModel model = new SpinnerNumberModel(0.9, -Double.MAX_VALUE, Double.MAX_VALUE, 0.1);
-        discountSpinner = new JSpinner(model);
-        discountSpinner.setMinimumSize(new Dimension(0, 0));
-        discountSpinner.setMaximumSize(new Dimension(1000, 1000));
-        discountSpinner.addChangeListener(new ChangeListener() {
-
-            @Override
-            public void stateChanged(ChangeEvent ce) {
-                frame.setDiscount((double) discountSpinner.getValue());
-            }
-        });
-
-        JFormattedTextField txt = ((JSpinner.NumberEditor) discountSpinner.getEditor()).getTextField();
-        ((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
-
-        propertiesPanel.add(discountSpinner);
-        
-        JButton storePolic = new JButton("Store Poily");
-        storePolic.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                frame.storePolicyHistory();
-            }
-        });
-        propertiesPanel.add(storePolic);
-        
-        JButton stroeUsability = new JButton("Store Usability");
-        stroeUsability.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                frame.storeUsabilityHistory();
-            }
-        });
-        propertiesPanel.add(stroeUsability);
-
-        JPanel panelWraper = new JPanel(new BorderLayout());
-        panelWraper.setBorder(BorderFactory.createTitledBorder(" Properites "));
-        panelWraper.add(propertiesPanel);
+        initAlgorithmPanel();
 
         initControllPanel();
+
+        JPanel panelWraper = new JPanel(new BorderLayout());
+        panelWraper.add(worldInfoPanel, BorderLayout.NORTH);
+        panelWraper.add(algorithmInfoPanel, BorderLayout.SOUTH);
 
         JPanel southPanel = new JPanel(new BorderLayout(5, 5));
         southPanel.add(panelWraper, BorderLayout.NORTH);
@@ -399,15 +343,118 @@ public class CustomTabbedPanel extends JPanel {
         tabbedPane.add("World", worldPanel);
     }
 
-    public void setWorldName(String str) {
-        worldName.setText(str);
+    protected void initWorldInfoPanel() {
+        GridLayout worldInfoLayout = new GridLayout(4, 2);
+        worldInfoLayout.setHgap(10);
+        JPanel mainPanel = new JPanel(worldInfoLayout);
+        mainPanel.setBorder(new EmptyBorder(3, 3, 3, 3));
+
+        // world name
+        JLabel worldLabel = new JLabel("Name");
+        worldLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        worldName = new JLabel();
+        mainPanel.add(worldLabel);
+        mainPanel.add(worldName);
+
+        // world 'a'
+        JLabel aWorldLabel = new JLabel("a");
+        aWorldLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        aWorld = new JLabel();
+        mainPanel.add(aWorldLabel);
+        mainPanel.add(aWorld);
+
+        //world 'b'
+        JLabel bWorldLabel = new JLabel("b");
+        bWorldLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        bWorld = new JLabel();
+        mainPanel.add(bWorldLabel);
+        mainPanel.add(bWorld);
+
+        //world 'r'
+        JLabel rWorldLabel = new JLabel("r");
+        rWorldLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        rWorld = new JLabel();
+        mainPanel.add(rWorldLabel);
+        mainPanel.add(rWorld);
+
+        worldInfoPanel = new JPanel();
+        worldInfoPanel.setBorder(BorderFactory.createTitledBorder(" World "));
+        worldInfoPanel.add(mainPanel);
     }
 
-    public void setAlgorithmName(String str) {
-        algorithmName.setText(str);
+    protected void initAlgorithmPanel() {
+        GridLayout propertiesLayout = new GridLayout(4, 2);
+        propertiesLayout.setHgap(10);
+        JPanel propertiesPanel = new JPanel(propertiesLayout);
+        propertiesPanel.setBorder(new EmptyBorder(3, 3, 3, 3));
+
+        JLabel algorithmLabel = new JLabel("Algorithm");
+        algorithmLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        algorithmName = new JLabel();
+        propertiesPanel.add(algorithmLabel);
+        propertiesPanel.add(algorithmName);
+
+        JLabel iterationLabel = new JLabel("Iteration");
+        iterationLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        iterationCoutLabel = new JLabel();
+        propertiesPanel.add(iterationLabel);
+        propertiesPanel.add(iterationCoutLabel);
+
+        JLabel discountLabel = new JLabel("Discount");
+        discountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        propertiesPanel.add(discountLabel);
+
+        SpinnerNumberModel model = new SpinnerNumberModel(0.9, -Double.MAX_VALUE, Double.MAX_VALUE, 0.1);
+        discountSpinner = new JSpinner(model);
+        discountSpinner.setMinimumSize(new Dimension(0, 0));
+        discountSpinner.setMaximumSize(new Dimension(1000, 1000));
+        discountSpinner.addChangeListener(new ChangeListener() {
+
+            @Override
+            public void stateChanged(ChangeEvent ce) {
+                frame.setDiscount((double) discountSpinner.getValue());
+            }
+        });
+
+        JFormattedTextField txt = ((JSpinner.NumberEditor) discountSpinner.getEditor()).getTextField();
+        ((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
+
+        propertiesPanel.add(discountSpinner);
+
+        //TO DELETE
+        JButton storePolic = new JButton("Store Poily");
+        storePolic.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                frame.storePolicyHistory();
+            }
+        });
+        propertiesPanel.add(storePolic);
+        // ----- END -----
+
+        JButton stroeUsability = new JButton("Store Usability");
+        stroeUsability.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                frame.storeUsabilityHistory();
+            }
+        });
+        propertiesPanel.add(stroeUsability);
+
+        algorithmInfoPanel = new JPanel(new BorderLayout());
+        algorithmInfoPanel.setBorder(BorderFactory.createTitledBorder(" Properites "));
+        algorithmInfoPanel.add(propertiesPanel);
     }
 
-    private void initControllPanel() {
+    protected void initControllPanel() {
         JFormattedTextField txt;
 
         /** Policy * */
@@ -506,10 +553,23 @@ public class CustomTabbedPanel extends JPanel {
         this.add(cardControllPanel, BorderLayout.PAGE_END);
     }
 
-    String getAlgorithmName() {
+    public void setWorldInfo(World w) {
+        if (w != null) {
+            worldName.setText(w.getName());
+            aWorld.setText(String.format("%f", w.getA()));
+            bWorld.setText(String.format("%f", w.getB()));
+            rWorld.setText(String.format("%f", w.getR()));
+        }
+    }
+
+    public void setAlgorithmName(String str) {
+        algorithmName.setText(str);
+    }
+
+    public String getAlgorithmName() {
         return algorithmName.getText();
     }
-    
+
     public void setIterationCountLabel(String val) {
         iterationCoutLabel.setText(val);
     }
