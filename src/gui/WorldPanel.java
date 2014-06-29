@@ -2,6 +2,7 @@ package gui;
 
 import enums.Action;
 import enums.FieldType;
+import gui.utility.MyLogger;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -19,6 +20,9 @@ public class WorldPanel extends JPanel {
 
     protected World world;
 
+    protected Action[][] storedPolicy;
+    protected Double[][] storedUsability;
+
     protected Logic logic;
 
     protected int fieldSize;
@@ -29,6 +33,21 @@ public class WorldPanel extends JPanel {
     protected JPanel that = this;
     protected Point selectedField = null;
     protected boolean edit = false;
+
+    protected boolean showStoredPolicy = false;
+    protected boolean showStoredUsability = false;
+    
+    protected Color fieldColor = this.getBackground();
+    protected Color forbiddenColor = Color.GRAY;
+    protected Color agentColor = Color.YELLOW;
+    protected Color fieldSymbolColor = Color.BLACK;
+    protected Color policyColor = Color.BLACK;
+    protected Color usabilityColor = Color.BLACK;
+    protected Color storedPolicySameColor = Color.GREEN;
+    protected Color storedPolicyDifferentColor = Color.RED;
+    protected Color storedUsabilityColor = Color.GRAY;
+    protected Color borderColor = Color.BLACK;
+    protected Color selectedColor = Color.RED;
 
     public WorldPanel() {
 
@@ -175,13 +194,15 @@ public class WorldPanel extends JPanel {
             }
 
             g.translate(xTranslate, yTranslate);
-
+            
+            int temp = 0;
+            
             Color bg = this.getBackground();
             for (int x = 0; x < world.getN(); x++) {
 
                 int xPos = x * fieldSize;
 
-                for (int y = 0; y < world.getM(); y++) {
+                for (int y = world.getM()-1; y >= 0 ; y--) {
 
                     int yPos = (world.getM() - 1 - y) * fieldSize;
 
@@ -189,10 +210,10 @@ public class WorldPanel extends JPanel {
                     if (tempField != null) {
                         String fieldSymbol = String.valueOf(FieldType.getChar(tempField.type));
                         String reward = "";
-                        g.setColor(bg);
+                        g.setColor(fieldColor);
                         switch (tempField.type) {
                             case FORBIDDEN:
-                                g.setColor(Color.GRAY);
+                                g.setColor(forbiddenColor);
                                 break;
                             case SPECIAL:
                                 reward = Double.toString(tempField.reward);
@@ -203,30 +224,48 @@ public class WorldPanel extends JPanel {
                         }
                         g.fillRect(xPos, yPos, fieldSize, fieldSize);
 
-                        if (!edit && logic != null && new State(x,y).compareTo(logic.getCurrentAgentState()) == 0) {
-                            g.setColor(Color.YELLOW);
+                        if (!edit && logic != null && new State(x, y).compareTo(logic.getCurrentAgentState()) == 0) {
+                            g.setColor(agentColor);
                             g.fillOval(xPos, yPos, fieldSize, fieldSize);
                         }
-                        
-                        g.setColor(Color.BLACK);
+
+                        g.setColor(fieldSymbolColor);
                         g.drawString(fieldSymbol, xPos + 5, yPos + g.getFontMetrics().getHeight());
                         g.drawString(reward, xPos + 5, yPos + g.getFontMetrics().getHeight() * 2);
                     }
 
-                    if (!edit && logic != null) {
-                        if (logic.getOptimalActions() != null && !world.isForbidden(x, y) && !world.isTermina(new State(x, y))) {
+                    if (!edit && logic != null && !world.isForbidden(x, y) && !world.isTermina(new State(x, y))) {
+                        
+                        if (logic.getOptimalActions() != null) {
+                            g.setColor(policyColor);
                             String act = Action.toString(logic.getOptimalActions()[x][y]);
                             g.drawString(act, xPos + fieldSize - g.getFontMetrics().stringWidth(act) - 5, yPos + g.getFontMetrics().getHeight());
 
                         }
 
-                        if (logic.getCurrentUsefulness() != null && !world.isForbidden(x, y) && !world.isTermina(new State(x, y))) {
+                        if (logic.getCurrentUsefulness() != null) {
+                            g.setColor(usabilityColor);
                             Double val = logic.getCurrentUsefulness()[x][y];
                             g.drawString(String.format("%.8f", val), xPos + 5, yPos + g.getFontMetrics().getHeight() * 3);
+                        }
 
+                        if (showStoredPolicy && storedPolicy != null) {
+                            g.setColor(storedPolicyDifferentColor);
+                            if(logic.getOptimalActions() != null && storedPolicy[x][y] == logic.getOptimalActions()[x][y]) {
+                                g.setColor(storedPolicySameColor);
+                            }
+                            String act = Action.toString(storedPolicy[x][y]);
+                            g.drawString(act, xPos + fieldSize - g.getFontMetrics().stringWidth(act) - 5, yPos + 2 * g.getFontMetrics().getHeight());
+                        }
+
+                        if (showStoredUsability && storedUsability != null) {
+                            g.setColor(storedUsabilityColor);
+                            Double val = storedUsability[x][y];
+                            g.drawString(String.format("%.8f", val), xPos + 5, yPos + g.getFontMetrics().getHeight() * 4);
                         }
                     }
-                    g.setColor(Color.BLACK);
+                    
+                    g.setColor(borderColor);
                     g.drawRect(xPos, yPos, fieldSize, fieldSize);
                 }
             }
@@ -235,13 +274,63 @@ public class WorldPanel extends JPanel {
             g.clearRect(0, world.getM() * fieldSize + 1, this.getSize().width, this.getSize().height);
 
             if (edit && selectedField != null) {
-                g.setColor(Color.RED);
+                g.setColor(selectedColor);
 
                 int xPos = selectedField.x * fieldSize;
                 int yPos = (world.getM() - 1 - selectedField.y) * fieldSize;
                 g.drawRect(xPos, yPos, fieldSize, fieldSize);
             }
         }
+    }
+
+    public void setShowStoredPolicy(boolean selected) {
+        showStoredPolicy = selected;
+
+        this.repaint();
+    }
+
+    public void setShowStoredUsability(boolean selected) {
+        showStoredUsability = selected;
+
+        this.repaint();
+    }
+
+    public void resetStoredPolicy() {
+        storedPolicy = null;
+    }
+
+    public void resetStoredUsability() {
+        storedUsability = null;
+    }
+
+    public void setStoredPolicy(Action[][] p) {
+        if (p == null || world == null) {
+            return;
+        }
+
+        if (p.length != world.getN() || p[0] == null || p[0].length != world.getM()) {
+            MyLogger.append("Set stored policy error: wrong world size");
+            return;
+        }
+
+        storedPolicy = p;
+
+        repaint();
+    }
+
+    public void setStoredUsability(Double[][] a) {
+        if (a == null || world == null) {
+            return;
+        }
+
+        if (a.length != world.getN() || a[0] == null || a[0].length != world.getM()) {
+            MyLogger.append("Set stored usability error: wrong world size");
+            return;
+        }
+
+        storedUsability = a;
+
+        repaint();
     }
 
 }

@@ -334,7 +334,9 @@ public class Logic {
     }
 
     public void StoreUsability() {
-        storedUsability = (Double[][]) currentUsability.clone();
+        if (currentUsability != null) {
+            storedUsability = (Double[][]) currentUsability.clone();
+        }
     }
 
     public Double[][] GetStoredUsability() {
@@ -346,7 +348,9 @@ public class Logic {
     }
 
     public void StorePolicy() {
-        storedPolicy = (Action[][]) optimalActions.clone();
+        if (optimalActions != null) {
+            storedPolicy = (Action[][]) optimalActions.clone();
+        }
     }
 
     public Action[][] GetStoredPolicy() {

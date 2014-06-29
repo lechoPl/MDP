@@ -10,6 +10,7 @@ import java.awt.Button;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -45,11 +46,16 @@ public class MainFrame extends JFrame {
     protected JMenuItem policyDiffrentChar = new JMenuItem("Show Policy Differences Char");
     protected JMenuItem RmsErrorChar = new JMenuItem("Show RMS ERROR Char");
 
-    protected final String storedUsabilityPrefix = "Stored usability: ";
-    protected JLabel storedUsabilityLabel = new JLabel(storedUsabilityPrefix);
+    protected JMenu menuSettings = new JMenu("Settings");
+    protected JMenu viewSettingsMenu = new JMenu("View");
+    protected JCheckBox showStoredPolicy = new JCheckBox("Show stored policy");
+    protected JCheckBox showStoredUsability = new JCheckBox("Show stored usability");
 
-    protected final String storedPolicyPrefix = "Stored policy: ";
-    protected JLabel storedPolicyLabel = new JLabel(storedPolicyPrefix);
+//    protected final String storedUsabilityPrefix = "Stored usability: ";
+//    protected JLabel storedUsabilityLabel = new JLabel(storedUsabilityPrefix);
+//
+//    protected final String storedPolicyPrefix = "Stored policy: ";
+//    protected JLabel storedPolicyLabel = new JLabel(storedPolicyPrefix);
 
     protected JSplitPane verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
@@ -123,9 +129,28 @@ public class MainFrame extends JFrame {
                 chartFrame.setVisible(true);
             }
         });
-        menuChart.add(new JSeparator(JSeparator.HORIZONTAL));
-        menuChart.add(storedUsabilityLabel);
-        menuChart.add(storedPolicyLabel);
+//        menuChart.add(new JSeparator(JSeparator.HORIZONTAL));
+//        menuChart.add(storedUsabilityLabel);
+//        menuChart.add(storedPolicyLabel);
+
+        menuBar.add(menuSettings);
+        menuSettings.add(viewSettingsMenu);
+        viewSettingsMenu.add(showStoredPolicy);
+        showStoredPolicy.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                worldPanel.setShowStoredPolicy(showStoredPolicy.isSelected());
+            }
+        });
+        viewSettingsMenu.add(showStoredUsability);
+        showStoredUsability.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                worldPanel.setShowStoredUsability(showStoredUsability.isSelected());
+            }
+        });
 
         this.add(menuBar, BorderLayout.PAGE_START);
 
@@ -147,10 +172,10 @@ public class MainFrame extends JFrame {
         this.validate();
 
         verticalSplitPane.setDividerLocation(0.8);
-        verticalSplitPane.setResizeWeight(1);
+        verticalSplitPane.setResizeWeight(0);
 
-        mainSplitPane.setDividerLocation(0.3);
-        mainSplitPane.setResizeWeight(0.2);
+        mainSplitPane.setDividerLocation(0.2);
+        mainSplitPane.setResizeWeight(0);
 
         editorFrame = new WorldEditorFrame();
     }
@@ -254,10 +279,13 @@ public class MainFrame extends JFrame {
 
         leftPanel.setWorldInfo(w);
         worldPanel.setLogic(logic);
+        worldPanel.resetStoredPolicy();
+        worldPanel.resetStoredUsability();
 
         leftPanel.setIterationCountLabel(String.valueOf(logic.GetUsabilityHistory().size()));
-        storedPolicyLabel.setText(storedPolicyPrefix);
-        storedUsabilityLabel.setText(storedUsabilityPrefix);
+        leftPanel.setStoredAlgName("");
+//        storedPolicyLabel.setText(storedPolicyPrefix);
+//        storedUsabilityLabel.setText(storedUsabilityPrefix);
     }
 
     public World getWorld() {
@@ -380,16 +408,14 @@ public class MainFrame extends JFrame {
         }
     }
 
-    void storePolicyHistory() {
+    void store() {
+        logic.StoreUsability();
         logic.StorePolicy();
 
-        storedPolicyLabel.setText(storedPolicyPrefix + leftPanel.getAlgorithmName());
-    }
-
-    void storeUsabilityHistory() {
-        logic.StoreUsability();
-
-        storedUsabilityLabel.setText(storedUsabilityPrefix + leftPanel.getAlgorithmName());
+        leftPanel.setStoredAlgName(leftPanel.getAlgorithmName() + " ( "+ logic.GetUsabilityHistory().size()  +" )");
+        
+        worldPanel.setStoredPolicy(logic.GetStoredPolicy());
+        worldPanel.setStoredUsability(logic.getCurrentUsefulness());
     }
 
     public static void main(String[] argc) {

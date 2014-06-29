@@ -42,6 +42,7 @@ public class LeftPanel extends JPanel {
     protected JLabel rWorld;
     protected JLabel algorithmName;
     protected JLabel iterationCoutLabel;
+    protected JLabel storedNameLabel;
 
     protected JPanel algorithmPanel;
     protected JPanel cardPanel;
@@ -388,25 +389,30 @@ public class LeftPanel extends JPanel {
     }
 
     protected void initAlgorithmPanel() {
+        JPanel panelWraper = new JPanel(new BorderLayout());
+        
         GridLayout propertiesLayout = new GridLayout(4, 2);
         propertiesLayout.setHgap(10);
         JPanel propertiesPanel = new JPanel(propertiesLayout);
         propertiesPanel.setBorder(new EmptyBorder(3, 3, 3, 3));
-
-        JLabel algorithmLabel = new JLabel("Algorithm");
+        
+        // name
+        JLabel algorithmLabel = new JLabel("Name");
         algorithmLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
         algorithmName = new JLabel();
         propertiesPanel.add(algorithmLabel);
         propertiesPanel.add(algorithmName);
-
+        
+        // iteration
         JLabel iterationLabel = new JLabel("Iteration");
         iterationLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
         iterationCoutLabel = new JLabel();
         propertiesPanel.add(iterationLabel);
         propertiesPanel.add(iterationCoutLabel);
-
+        
+        // dicount
         JLabel discountLabel = new JLabel("Discount");
         discountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         propertiesPanel.add(discountLabel);
@@ -427,32 +433,33 @@ public class LeftPanel extends JPanel {
         ((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
 
         propertiesPanel.add(discountSpinner);
+        
+        // stored name
+        JLabel storedLabel = new JLabel("Stored Name");
+        storedLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
-        //TO DELETE
-        JButton storePolic = new JButton("Store Poily");
-        storePolic.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                frame.storePolicyHistory();
-            }
-        });
-        propertiesPanel.add(storePolic);
-        // ----- END -----
-
-        JButton stroeUsability = new JButton("Store Usability");
-        stroeUsability.addActionListener(new ActionListener() {
+        storedNameLabel = new JLabel();
+        propertiesPanel.add(storedLabel);
+        propertiesPanel.add(storedNameLabel);        
+        
+        // store button
+        JButton storeUsability = new JButton("Store Usability");
+        storeUsability.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent ae) {
-                frame.storeUsabilityHistory();
+                frame.store();
             }
         });
-        propertiesPanel.add(stroeUsability);
+        JPanel tempButtonPanel = new JPanel();
+        tempButtonPanel.add(storeUsability);
+
+        panelWraper.add(propertiesPanel, BorderLayout.CENTER);
+        panelWraper.add(tempButtonPanel, BorderLayout.SOUTH);
 
         algorithmInfoPanel = new JPanel(new BorderLayout());
-        algorithmInfoPanel.setBorder(BorderFactory.createTitledBorder(" Properites "));
-        algorithmInfoPanel.add(propertiesPanel);
+        algorithmInfoPanel.setBorder(BorderFactory.createTitledBorder(" Algorithm "));
+        algorithmInfoPanel.add(panelWraper);
     }
 
     protected void initControllPanel() {
@@ -573,5 +580,9 @@ public class LeftPanel extends JPanel {
 
     public void setIterationCountLabel(String val) {
         iterationCoutLabel.setText(val);
+    }
+    
+    public void setStoredAlgName(String val) {
+        storedNameLabel.setText(val);
     }
 }
