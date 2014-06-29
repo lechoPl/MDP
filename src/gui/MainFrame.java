@@ -110,7 +110,7 @@ public class MainFrame extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent ae) {
-                PolicyChartFrame chartFrame = new PolicyChartFrame(that.logic.GetPolicyHistory(), that.logic.GetStoredPolicyHistory());
+                PolicyChartFrame chartFrame = new PolicyChartFrame(that.logic.GetPolicyHistory(), that.logic.GetStoredPolicy());
                 chartFrame.setVisible(true);
             }
         });
@@ -119,7 +119,7 @@ public class MainFrame extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent ae) {
-                RmsChartFrame chartFrame = new RmsChartFrame(that.logic.GetUsabilityHistory(), that.logic.GetStoredUsabilityHistory());
+                RmsChartFrame chartFrame = new RmsChartFrame(that.logic.GetUsabilityHistory(), that.logic.GetStoredUsability());
                 chartFrame.setVisible(true);
             }
         });
@@ -381,7 +381,7 @@ public class MainFrame extends JFrame {
     }
 
     void storePolicyHistory() {
-        logic.StorePolicyHistory();
+        logic.StorePolicy();
 
         storedPolicyLabel.setText(storedPolicyPrefix + leftPanel.getAlgorithmName());
     }

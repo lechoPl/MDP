@@ -18,13 +18,13 @@ public class Logic {
     protected WorldForPolicy worldForPolicy;
 
     protected ArrayList<Double[][]> usabilityHistory = new ArrayList<>();
-    protected ArrayList<Double[][]> storedUsabilityHistory = null;
-
     protected ArrayList<Action[][]> policyHistory = new ArrayList<>();
-    protected ArrayList<Action[][]> storedPolicyHistory = null;
 
     protected Action[][] optimalActions;
     protected Double[][] currentUsability;
+
+    protected Double[][] storedUsability = null;
+    protected Action[][] storedPolicy = null;
 
     protected double discount = 1;
 
@@ -54,9 +54,9 @@ public class Logic {
         }
 
         usabilityHistory = new ArrayList<>();
-        storedUsabilityHistory = null;
+        storedUsability = null;
         policyHistory = new ArrayList<>();
-        storedPolicyHistory = null;
+        storedPolicy = null;
         optimalActions = null;
         currentUsability = null;
     }
@@ -313,7 +313,7 @@ public class Logic {
             }
 
             usabilityHistory.add(currentUsability);
-            
+
             optimalActions = new Action[world.getN()][world.getM()];
             for (int x = 0; x < world.getN(); x++) {
                 for (int y = 0; y < world.getM(); y++) {
@@ -334,23 +334,23 @@ public class Logic {
     }
 
     public void StoreUsability() {
-        storedUsabilityHistory = (ArrayList<Double[][]>) usabilityHistory.clone();
+        storedUsability = (Double[][]) currentUsability.clone();
     }
 
-    public ArrayList<Double[][]> GetStoredUsabilityHistory() {
-        return storedUsabilityHistory;
+    public Double[][] GetStoredUsability() {
+        return storedUsability;
     }
 
     public ArrayList<Action[][]> GetPolicyHistory() {
         return policyHistory;
     }
 
-    public void StorePolicyHistory() {
-        storedPolicyHistory = (ArrayList<Action[][]>) policyHistory.clone();
+    public void StorePolicy() {
+        storedPolicy = (Action[][]) optimalActions.clone();
     }
 
-    public ArrayList<Action[][]> GetStoredPolicyHistory() {
-        return storedPolicyHistory;
+    public Action[][] GetStoredPolicy() {
+        return storedPolicy;
     }
 
 }

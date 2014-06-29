@@ -70,6 +70,7 @@ public class LeftPanel extends JPanel {
         this.add(tabbedPane, BorderLayout.CENTER);
 
         initAlgorithmTab();
+        
         initWorldTab();
 
         initWorldInfoPanel();
