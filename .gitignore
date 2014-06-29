@@ -14,3 +14,4 @@ hs_err_pid*
 lib/jfreechart-1.0.17/lib/*
 !lib/jfreechart-1.0.17/lib/*.jar
 
+/dist/

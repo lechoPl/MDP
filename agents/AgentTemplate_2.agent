@@ -1,0 +1,51 @@
+package userCode;
+
+import enums.Action;
+import java.util.Random;
+import world.State;
+import world.WorldSim;
+
+public class MyAgent implements IAgent {
+
+    protected WorldSim world;
+
+    protected double discount = 1;
+    
+    //user variables
+
+    @Override
+    public void setWorldSimulator(WorldSim simulator) {
+        world = simulator;
+
+        // init user variables
+    }
+   
+
+    @Override
+    public void step() {
+        // user code
+    }
+
+    @Override
+    public void setDiscount(double val) {
+        discount = val;
+    }
+
+    @Override
+    public double getUsability(State s) {
+        // user code
+    }
+
+    @Override
+    public void iterate() {
+
+        if (world.isTermina(world.getCurrentState())) {
+            step();
+        }
+
+        while (!world.isTermina(world.getCurrentState())) {
+            step();
+        }
+    }
+
+}

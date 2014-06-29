@@ -37,20 +37,20 @@ public class WorldPanel extends JPanel {
     protected boolean showStoredPolicy = false;
     protected boolean showStoredUsability = false;
     
-    protected Color fieldColor = this.getBackground();
-    protected Color forbiddenColor = Color.GRAY;
-    protected Color agentColor = Color.YELLOW;
-    protected Color fieldSymbolColor = Color.BLACK;
-    protected Color policyColor = Color.BLACK;
-    protected Color usabilityColor = Color.BLACK;
-    protected Color storedPolicySameColor = Color.GREEN;
-    protected Color storedPolicyDifferentColor = Color.RED;
-    protected Color storedUsabilityColor = Color.GRAY;
-    protected Color borderColor = Color.BLACK;
-    protected Color selectedColor = Color.RED;
+    protected static Color fieldColor = new Color(238, 238, 238);
+    protected static Color forbiddenColor = Color.GRAY;
+    protected static Color agentColor = Color.YELLOW;
+    protected static Color fieldSymbolColor = Color.BLACK;
+    protected static Color policyColor = Color.BLACK;
+    protected static Color usabilityColor = Color.BLACK;
+    protected static Color storedPolicySameColor = Color.GREEN;
+    protected static Color storedPolicyDifferentColor = Color.RED;
+    protected static Color storedUsabilityColor = Color.GRAY;
+    protected static Color borderColor = Color.BLACK;
+    protected static Color selectedColor = Color.RED;
 
     public WorldPanel() {
-
+        
         setFiledSize(50);
 
         this.addMouseListener(new MouseAdapter() {

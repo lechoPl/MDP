@@ -5,26 +5,18 @@ import world.State;
 import world.Transaction;
 import world.WorldForPolicy;
 
-public class IVpolicy implements IPolicy {
-
-    protected WorldForPolicy world;
-    protected double discount = 1;
+public class IVpolicy extends AbstractPolicy {
 
     Double[][] ussfuless = null;
     Double[][] lastUssfuless = null;
-
+    
     @Override
     public void setWorldForPolicy(WorldForPolicy worldForPolicy) {
-        world = worldForPolicy;
+        super.setWorldForPolicy(worldForPolicy);
         
         ussfuless = new Double[world.getN()][world.getM()];
     }
-
-    @Override
-    public void setDiscount(double val) {
-        discount = val;
-    }
-
+    
     @Override
     public double getUsability(State s) {
         Double u = ussfuless[s.getX()][s.getY()];
@@ -63,4 +55,5 @@ public class IVpolicy implements IPolicy {
             }
         }
     }
+
 }

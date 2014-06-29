@@ -1,0 +1,31 @@
+package userCode;
+
+import enums.Action;
+import world.State;
+import world.Transaction;
+import world.WorldForPolicy;
+
+public class IVpolicy extends AbstractPolicy {
+
+    // user variables
+    
+    @Override
+    public void setWorldForPolicy(WorldForPolicy worldForPolicy) {
+        super.setWorldForPolicy(worldForPolicy);
+
+        // init user variables
+    }
+    
+    @Override
+    public double getUsability(State s) {
+        
+        // user code
+    }
+
+    @Override
+    public void iterate() {
+
+        // user code
+    }
+
+}
