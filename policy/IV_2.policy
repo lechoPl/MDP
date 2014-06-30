@@ -5,7 +5,7 @@ import world.State;
 import world.Transaction;
 import world.WorldForPolicy;
 
-public class IVpolicy extends AbstractPolicy {
+public class IVpolicy extends AbstractPolicy implements IPolicy {
 
     Double[][] ussfuless = null;
     Double[][] lastUssfuless = null;

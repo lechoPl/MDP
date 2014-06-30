@@ -5,7 +5,7 @@ import world.State;
 import world.Transaction;
 import world.WorldForPolicy;
 
-public class IVpolicy extends AbstractPolicy {
+public class MyPolicy extends AbstractPolicy implements IPolicy{
 
     // user variables
     

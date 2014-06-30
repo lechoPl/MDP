@@ -169,7 +169,7 @@ public class FileManagement {
             }
 
             int intedxPC = source.indexOf("public class ") + "public class ".length();
-            int intedxIm = source.indexOf(" implements IPolicy");
+            int intedxIm = source.indexOf(" ", intedxPC);
 
             String className = source.substring(intedxPC, intedxIm).trim();
             
@@ -250,7 +250,7 @@ public class FileManagement {
             }
 
             int intedxPC = source.indexOf("public class ") + "public class ".length();
-            int intedxIm = source.indexOf(" implements IAgent");
+            int intedxIm = source.indexOf(" ", intedxPC);
 
             String className = source.substring(intedxPC, intedxIm).trim();
 
