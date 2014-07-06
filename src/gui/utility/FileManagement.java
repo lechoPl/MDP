@@ -1,20 +1,30 @@
 package gui.utility;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 import userCode.*;
 import world.World;
@@ -139,6 +149,43 @@ public class FileManagement {
         return null;
     }
 
+    protected static boolean CompileCode(String className, String fileName, String source)
+            throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+
+        File folder = new File("./temp");
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+
+        boolean status = false;
+        File sourceFile = new File("./temp/" + className + ".java");
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector();
+
+        FileWriter writer = new FileWriter(sourceFile);
+        try {
+            writer.write(source);
+        } finally {
+            if (writer != null) {
+                writer.close();
+            }
+        }
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null)) {
+            fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(new File[]{new File("./")}));
+
+            status = compiler.getTask(null, fileManager, diagnostics, null, null, fileManager.getJavaFileObjectsFromFiles(Arrays.asList(new File[]{sourceFile}))).call();
+        }
+        if (!status) {
+            String tempMsg = "";
+            for (Diagnostic diagnostic : diagnostics.getDiagnostics()) {
+                tempMsg = tempMsg + diagnostic + "\n";
+            }
+
+            MyLogger.append(tempMsg);
+        }
+        return status;
+    }
+
     public static boolean checkPolicyCode(String code) {
         if (!code.contains("package userCode;")
                 || !code.contains("public class ")
@@ -172,39 +219,13 @@ public class FileManagement {
             int intedxIm = source.indexOf(" ", intedxPC);
 
             String className = source.substring(intedxPC, intedxIm).trim();
-            
-            // Save source in .java file.
-            File root = new File("/java");
-            File sourceFile = new File(root, "userCode/" + className + ".java");
-            sourceFile.getParentFile().mkdirs();
-            new FileWriter(sourceFile).append(source).close();
 
-            // Compile source file.
-            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-            OutputStream out = new OutputStream() {
-                String msg = "";
-
-                @Override
-                public void write(int i) throws IOException {
-                    msg += (char) i;
-                }
-
-                @Override
-                public String toString() {
-                    return msg;
-                }
-            };
-
-            compiler.run(null, null, out, sourceFile.getPath());
-            if (!out.toString().isEmpty()) {
-                MyLogger.append(fileName + " : Compiler error\n" + out.toString());
-                return null;
+            IPolicy instance = null;
+            if (CompileCode(className, fileName, source)) {
+                MyClassLoader mcl = new MyClassLoader(ClassLoader.getSystemClassLoader());
+                instance = (IPolicy) mcl.loadMyClass(className).newInstance();
             }
 
-            // Load and instantiate compiled class.
-            URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{root.toURI().toURL()});
-            Class<?> cls = Class.forName("userCode." + className, true, classLoader);
-            IPolicy instance = (IPolicy) cls.newInstance();
             MyLogger.append("Policy " + fileName + " loaded");
 
             return instance;
@@ -216,6 +237,7 @@ public class FileManagement {
             }
             MyLogger.append(msg);
 
+            MyLogger.append("Uruchom aplikacj pod JDK zamiast JRE");
             return null;
         }
     }
@@ -254,39 +276,12 @@ public class FileManagement {
 
             String className = source.substring(intedxPC, intedxIm).trim();
 
-            // Save source in .java file.
-            File root = new File("/java");
-            File sourceFile = new File(root, "userCode/" + className + ".java");
-            sourceFile.getParentFile().mkdirs();
-            new FileWriter(sourceFile).append(source).close();
-
-            // Compile source file.
-            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-            compiler.run(null, null, null, sourceFile.getPath());
-
-            OutputStream out = new OutputStream() {
-                String msg = "";
-
-                @Override
-                public void write(int i) throws IOException {
-                    msg += (char) i;
-                }
-
-                @Override
-                public String toString() {
-                    return msg;
-                }
-            };
-            compiler.run(null, null, out, sourceFile.getPath());
-            if (!out.toString().isEmpty()) {
-                MyLogger.append(fileName + " : Compiler error\n" + out.toString());
-                return null;
+            IAgent instance = null;
+            if (CompileCode(className, fileName, source)) {
+                MyClassLoader mcl = new MyClassLoader(ClassLoader.getSystemClassLoader());
+                instance = (IAgent) mcl.loadMyClass(className).newInstance();
             }
 
-            // Load and instantiate compiled class.
-            URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{root.toURI().toURL()});
-            Class<?> cls = Class.forName("userCode." + className, true, classLoader);
-            IAgent instance = (IAgent) cls.newInstance();
             MyLogger.append("Agent " + fileName + " loaded");
 
             return instance;
@@ -297,8 +292,69 @@ public class FileManagement {
                 msg += "\t" + e.toString() + "\n";
             }
             MyLogger.append(msg);
+
+            MyLogger.append("Uruchom aplikacj pod JDK zamiast JRE");
             return null;
         }
     }
 
+}
+
+class MyClassLoader
+        extends ClassLoader {
+
+    String _referenceName = "";
+
+    public MyClassLoader(ClassLoader parent) {
+        super(parent);
+    }
+
+    public String getReferenceName() {
+        return this._referenceName;
+    }
+
+    public void setReferenceName(String name) {
+        this._referenceName = name;
+    }
+
+    public Class loadMyClass(String name)
+            throws ClassNotFoundException {
+        setReferenceName(name);
+        return loadClass(name);
+    }
+
+    @Override
+    public Class loadClass(String name)
+            throws ClassNotFoundException {
+        if (!this._referenceName.equals(name)) {
+            return super.loadClass(name);
+        }
+        try {
+            String url = "file:./userCode/" + name + ".class";
+            URL myUrl = new URL(url);
+            URLConnection connection = myUrl.openConnection();
+
+            InputStream input = connection.getInputStream();
+            ByteArrayOutputStream buffer;
+            try {
+                buffer = new ByteArrayOutputStream();
+                int data = input.read();
+                while (data != -1) {
+                    buffer.write(data);
+                    data = input.read();
+                }
+            } finally {
+                input.close();
+            }
+            byte[] classData = buffer.toByteArray();
+
+            //System.out.println(name);
+            return defineClass(null, classData, 0, classData.length);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
