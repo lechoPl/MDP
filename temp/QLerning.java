@@ -5,10 +5,13 @@ import java.util.Random;
 import world.State;
 import world.WorldSim;
 
-public class QLerning extends AbstractAgent implements IAgent {
+public class QLerning implements IAgent {
 
+    protected WorldSim world;
+
+    protected double discount = 1;
     protected double epsilon = 0.05;
-    
+
     protected Random rand = new Random();
 
     protected Double[][][] Q;
@@ -16,11 +19,11 @@ public class QLerning extends AbstractAgent implements IAgent {
     protected State previousState = null;
     protected Action previousAction = null;
     protected Double previousReward = null;
-    
+
     @Override
     public void setWorldSimulator(WorldSim simulator) {
-        super.setWorldSimulator(simulator);
-        
+        world = simulator;
+
         Q = new Double[world.getN()][world.getM()][world.getActions().length];
         N = new Integer[world.getN()][world.getM()][world.getActions().length];
 
@@ -28,7 +31,7 @@ public class QLerning extends AbstractAgent implements IAgent {
         previousAction = null;
         previousReward = null;
     }
-    
+
     protected Action getBestAction(State s) {
         Action bestAction = null;
         Double max = null;
@@ -63,7 +66,7 @@ public class QLerning extends AbstractAgent implements IAgent {
 
         return max != null ? max : 0;
     }
-    
+
     @Override
     public void step() {
         if (world.isTermina(world.getCurrentState())) {
@@ -101,11 +104,29 @@ public class QLerning extends AbstractAgent implements IAgent {
                 Q[world.getCurrentState().getX()][world.getCurrentState().getY()][i] = world.getCurrentReward();
             }
         }
+
+    }
+
+    @Override
+    public void setDiscount(double val) {
+        discount = val;
     }
 
     @Override
     public double getUsability(State s) {
         return maxQ(s);
+    }
+
+    @Override
+    public void iterate() {
+
+        if (world.isTermina(world.getCurrentState())) {
+            step();
+        }
+
+        while (!world.isTermina(world.getCurrentState())) {
+            step();
+        }
     }
 
 }

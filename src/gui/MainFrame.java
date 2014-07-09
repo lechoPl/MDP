@@ -12,7 +12,6 @@ import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -42,20 +41,14 @@ public class MainFrame extends JFrame {
     protected JMenuItem exitMenuItem = new JMenuItem("Exit");
 
     protected JMenu menuChart = new JMenu("Charts");
-    protected JMenuItem usabilityChar = new JMenuItem("Show Usability Char");
-    protected JMenuItem policyDiffrentChar = new JMenuItem("Show Policy Differences Char");
-    protected JMenuItem RmsErrorChar = new JMenuItem("Show RMS ERROR Char");
+    protected JMenuItem usabilityChar = new JMenuItem("Show Usability Chart");
+    protected JMenuItem policyDiffrentChar = new JMenuItem("Show Policy Differences Chart");
+    protected JMenuItem RmsErrorChar = new JMenuItem("Show RMS ERROR Chart");
 
     protected JMenu menuSettings = new JMenu("Settings");
     protected JMenu viewSettingsMenu = new JMenu("View");
     protected JCheckBox showStoredPolicy = new JCheckBox("Show stored policy");
     protected JCheckBox showStoredUsability = new JCheckBox("Show stored usability");
-
-//    protected final String storedUsabilityPrefix = "Stored usability: ";
-//    protected JLabel storedUsabilityLabel = new JLabel(storedUsabilityPrefix);
-//
-//    protected final String storedPolicyPrefix = "Stored policy: ";
-//    protected JLabel storedPolicyLabel = new JLabel(storedPolicyPrefix);
 
     protected JSplitPane verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
