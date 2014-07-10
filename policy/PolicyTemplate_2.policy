@@ -2,7 +2,7 @@ package userCode;
 
 import enums.Action;
 import world.State;
-import world.Transaction;
+import world.Transition;
 import world.WorldForPolicy;
 
 public class MyPolicy extends AbstractPolicy implements IPolicy{

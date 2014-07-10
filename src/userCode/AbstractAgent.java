@@ -20,11 +20,11 @@ public abstract class AbstractAgent implements IAgent {
     @Override
     public void iterate() {
 
-        if (world.isTermina(world.getCurrentState())) {
+        if (world.isTerminal(world.getCurrentState())) {
             step();
         }
 
-        while (!world.isTermina(world.getCurrentState())) {
+        while (!world.isTerminal(world.getCurrentState())) {
             step();
         }
     }

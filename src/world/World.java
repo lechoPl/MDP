@@ -90,29 +90,29 @@ public class World {
      * s - new state,
      * p - probability of finding in it
      */
-    public ArrayList<Transaction> Transactions(State s, Action action) {
-        ArrayList<Transaction> result = new ArrayList<>();
+    public ArrayList<Transition> Transitions(State s, Action action) {
+        ArrayList<Transition> result = new ArrayList<>();
 
-        result.add(new Transaction(getFront(s, action), this.a));
-        Transaction tempTransaction;
+        result.add(new Transition(getFront(s, action), this.a));
+        Transition tempTransition;
 
         State left = getLeft(s, action);
         double leftProbability = this.b;
-        tempTransaction = ContainsState(result, left);
-        if (tempTransaction != null) {
-            leftProbability += tempTransaction.probability;
-            result.remove(tempTransaction);
+        tempTransition = ContainsState(result, left);
+        if (tempTransition != null) {
+            leftProbability += tempTransition.probability;
+            result.remove(tempTransition);
         }
-        result.add(new Transaction(left, leftProbability));
+        result.add(new Transition(left, leftProbability));
 
         State right = getRigth(s, action);
         double rightProbability = this.b;
-        tempTransaction = ContainsState(result, right);
-        if (tempTransaction != null) {
-            rightProbability += tempTransaction.probability;
-            result.remove(tempTransaction);
+        tempTransition = ContainsState(result, right);
+        if (tempTransition != null) {
+            rightProbability += tempTransition.probability;
+            result.remove(tempTransition);
         }
-        result.add(new Transaction(right, rightProbability));
+        result.add(new Transition(right, rightProbability));
 
         return result;
     }
@@ -234,7 +234,7 @@ public class World {
         return null;
     }
 
-    public boolean isTermina(State s) {
+    public boolean isTerminal(State s) {
         if (isOutsideBoard(s.x, s.y)) {
             return false;
         }
@@ -346,10 +346,10 @@ public class World {
     /**
      * @param list
      * @param s
-     * @return return Transaction with state s if exist or null
+     * @return return Transition with state s if exist or null
      */
-    protected Transaction ContainsState(ArrayList<Transaction> list, State s) {
-        for (Transaction t : list) {
+    protected Transition ContainsState(ArrayList<Transition> list, State s) {
+        for (Transition t : list) {
             if (t.state == s) {
                 return t;
             }

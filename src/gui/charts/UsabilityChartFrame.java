@@ -51,7 +51,14 @@ public class UsabilityChartFrame extends JFrame {
             }
         }
         
-        for(int i=0; i<usabilityHistory.size(); i++) {
+        
+        int nextI = 1;
+        
+        for(int i=0; i<usabilityHistory.size(); i+= nextI) {
+            if(i > 10000) {
+                nextI = 100;
+            }
+            
             Double[][] usability = usabilityHistory.get(i);
             
             for(int x=0; x<xMax; x++) {

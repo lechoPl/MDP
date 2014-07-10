@@ -1,10 +1,10 @@
 package world;
 
-public class Transaction {
+public class Transition {
     public final State state;
     public double probability;
     
-    public Transaction(State s, double p) {
+    public Transition(State s, double p) {
         state = s;
         probability = p;
     }

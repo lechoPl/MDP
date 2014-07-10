@@ -156,7 +156,7 @@ public class Logic {
         for (int j = 0; j < i; j++) {
             ((IAgent) userCode).step();
 
-            if (worldSim.isTermina(worldSim.getCurrentState())) {
+            if (worldSim.isTerminal(worldSim.getCurrentState())) {
                 currentUsability = new Double[world.getN()][world.getM()];
                 for (int x = 0; x < world.getN(); x++) {
                     for (int y = 0; y < world.getM(); y++) {
@@ -301,9 +301,9 @@ public class Logic {
             return;
         }
 
-        currentUsability = new Double[world.getN()][world.getM()];
-
         for (int j = 0; j < i; j++) {
+            currentUsability = new Double[world.getN()][world.getM()];
+            
             ((IPolicy) userCode).iterate();
 
             for (int x = 0; x < world.getN(); x++) {

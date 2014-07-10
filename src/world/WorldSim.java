@@ -35,8 +35,8 @@ public class WorldSim {
         return world.Reward(currentState);
     }
     
-    public boolean isTermina(State s) {
-        return world.isTermina(s);
+    public boolean isTerminal(State s) {
+        return world.isTerminal(s);
     }
     
     public void executeAction(Action action) {

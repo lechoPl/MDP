@@ -42,13 +42,13 @@ public class MainFrame extends JFrame {
 
     protected JMenu menuChart = new JMenu("Charts");
     protected JMenuItem usabilityChar = new JMenuItem("Show Usability Chart");
-    protected JMenuItem policyDiffrentChar = new JMenuItem("Show Policy Differences Chart");
-    protected JMenuItem RmsErrorChar = new JMenuItem("Show RMS ERROR Chart");
+    protected JMenuItem policyDiffrentChar = new JMenuItem("Policy differences Chart");
+    protected JMenuItem RmsErrorChar = new JMenuItem("RMS Error Chart");
 
     protected JMenu menuSettings = new JMenu("Settings");
     protected JMenu viewSettingsMenu = new JMenu("View");
-    protected JCheckBox showStoredPolicy = new JCheckBox("Show stored policy");
-    protected JCheckBox showStoredUsability = new JCheckBox("Show stored usability");
+    protected JCheckBox showStoredPolicy = new JCheckBox("Show stored policy", true);
+    protected JCheckBox showStoredUsability = new JCheckBox("Show stored usability", true);
 
     protected JSplitPane verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
@@ -66,11 +66,14 @@ public class MainFrame extends JFrame {
     protected WorldEditorFrame editorFrame;
 
     public MainFrame() {
-
+        
         this.setTitle(frameTitle);
         this.setSize(1024, 768);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-
+        
+        worldPanel.zoomIn();
+        worldPanel.zoomIn();
+        
         this.setVisible(true);
         this.setLayout(new BorderLayout());
 
@@ -122,9 +125,6 @@ public class MainFrame extends JFrame {
                 chartFrame.setVisible(true);
             }
         });
-//        menuChart.add(new JSeparator(JSeparator.HORIZONTAL));
-//        menuChart.add(storedUsabilityLabel);
-//        menuChart.add(storedPolicyLabel);
 
         menuBar.add(menuSettings);
         menuSettings.add(viewSettingsMenu);

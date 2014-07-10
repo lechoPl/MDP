@@ -22,8 +22,8 @@ public class WorldForPolicy {
         return world.ListStates().toArray(new State[world.ListStates().size()]);
     }
 
-    public Transaction[] getTransactions(State s, Action a) {
-        return world.Transactions(s, a).toArray(new Transaction[world.Transactions(s, a).size()]);
+    public Transition[] getTransitions(State s, Action a) {
+        return world.Transitions(s, a).toArray(new Transition[world.Transitions(s, a).size()]);
     }
 
     public double getReward(State s) {
@@ -35,6 +35,6 @@ public class WorldForPolicy {
     }
 
     public boolean isTerminal(State s) {
-        return world.isTermina(s);
+        return world.isTerminal(s);
     }
 }

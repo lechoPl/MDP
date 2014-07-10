@@ -15,20 +15,20 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 public class PolicyChartFrame extends JFrame {
 
-    protected final String fameName = "Policy Differences Chart";
+    protected final String frameName = "Number of states with policy differring from stored";
     protected JFreeChart chart;
 
     public PolicyChartFrame(ArrayList<Action[][]> policyHistory1, Action[][] storedPolicy) {
         this.setSize(800, 600);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        this.setTitle(fameName);
+        this.setTitle(frameName);
 
         this.setLayout(new BorderLayout());
 
         XYSeriesCollection dataset = convertPolicyToSeries(policyHistory1, storedPolicy);
 
         chart = ChartFactory.createXYLineChart(
-                "Policy Differences Chart", "Iteration", "Number of States", dataset,
+                frameName, "Iteration", "Number of States", dataset,
                 PlotOrientation.VERTICAL, true, true, false);
 
         ChartPanel chartPanel = new ChartPanel(chart);
@@ -42,7 +42,7 @@ public class PolicyChartFrame extends JFrame {
 
         if (policyHistory1 == null || policyHistory1.isEmpty()
                 || storedPolicy == null) {
-            MyLogger.append("Policy Chart - Error: wrong data");
+            MyLogger.append(frameName + " - Error: wrong data");
 
             return dataset;
         }
@@ -54,20 +54,23 @@ public class PolicyChartFrame extends JFrame {
         int yMax2 = storedPolicy[0].length;
 
         if (xMax1 != xMax2 || yMax1 != yMax2) {
-            MyLogger.append("Policy Chart - Error: wrong data");
+            MyLogger.append(frameName + " - Error: wrong data");
 
             return dataset;
         }
 
-        XYSeries[] series = new XYSeries[2];
+        XYSeries[] series = new XYSeries[1];
         series[0] = new XYSeries("Different");
-        series[1] = new XYSeries("Same");
 
         int iMax = policyHistory1.size();
-
-        int numberOfFileds = xMax1 * yMax2;
-
-        for (int i = 0; i < iMax; i++) {
+        
+        int nextI = 1;
+        
+        for (int i = 0; i < iMax; i+= nextI) {
+            if(i > 10000) {
+                nextI = 100;
+            }
+            
             int diffrent = 0;
 
             for (int x = 0; x < xMax1; x++) {
@@ -77,10 +80,7 @@ public class PolicyChartFrame extends JFrame {
                     }
                 }
             }
-            int same = numberOfFileds - diffrent;
             series[0].add(i, diffrent);
-            series[1].add(i, same);
-
         }
 
         for (XYSeries s : series) {

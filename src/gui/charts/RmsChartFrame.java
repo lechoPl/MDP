@@ -14,20 +14,20 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 public class RmsChartFrame extends JFrame {
 
-    protected final String fameName = "RMS Error Chart";
+    protected final String frameName = "RMS Error with respect to stored usabilities";
     protected JFreeChart chart;
 
     public RmsChartFrame(ArrayList<Double[][]> usabilityHistory1, Double[][] storedUsability) {
         this.setSize(800, 600);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        this.setTitle(fameName);
+        this.setTitle(frameName);
 
         this.setLayout(new BorderLayout());
 
         XYSeriesCollection dataset = convertPolicyToSeries(usabilityHistory1, storedUsability);
 
         chart = ChartFactory.createXYLineChart(
-                "Rms Error", "Iteration", "RMS error", dataset,
+                frameName, "Iteration", "RMS error", dataset,
                 PlotOrientation.VERTICAL, true, true, false);
 
         ChartPanel chartPanel = new ChartPanel(chart);
@@ -41,7 +41,7 @@ public class RmsChartFrame extends JFrame {
 
         if (usabilityHistory1 == null || usabilityHistory1.isEmpty() ||
                 storedUsability == null) {
-            MyLogger.append("Rms Error Chart - Error: wrong data");
+            MyLogger.append(frameName + " - Error: wrong data");
 
             return dataset;
         }
@@ -53,7 +53,7 @@ public class RmsChartFrame extends JFrame {
         int yMax2 = storedUsability[0].length;
 
         if (xMax1 != xMax2 || yMax1 != yMax2) {
-            MyLogger.append("Rms Error Chart - Error: wrong data");
+            MyLogger.append(frameName + " - Error: wrong data");
 
             return dataset;
         }
@@ -62,8 +62,14 @@ public class RmsChartFrame extends JFrame {
 
         int iMax = usabilityHistory1.size();
         double numberOfFileds = xMax1 * yMax2;
-
-        for (int i = 0; i < iMax; i++) {
+        
+        int nextI = 1;
+        
+        for (int i = 0; i < iMax; i += nextI) {
+            if(i > 10000) {
+                nextI = 100;
+            }
+            
             Double[][] usablity1 = usabilityHistory1.get(i);
 
             double value = 0;

@@ -2,29 +2,21 @@ package userCode;
 
 import enums.Action;
 import world.State;
-import world.Transaction;
+import world.Transition;
 import world.WorldForPolicy;
 
-public class IVpolicy implements IPolicy {
-
-    protected WorldForPolicy world;
-    protected double discount = 1;
+public class IVpolicy extends AbstractPolicy implements IPolicy {
 
     Double[][] ussfuless = null;
     Double[][] lastUssfuless = null;
-
+    
     @Override
     public void setWorldForPolicy(WorldForPolicy worldForPolicy) {
-        world = worldForPolicy;
+        super.setWorldForPolicy(worldForPolicy);
         
         ussfuless = new Double[world.getN()][world.getM()];
     }
-
-    @Override
-    public void setDiscount(double val) {
-        discount = val;
-    }
-
+    
     @Override
     public double getUsability(State s) {
         Double u = ussfuless[s.getX()][s.getY()];
@@ -45,7 +37,7 @@ public class IVpolicy implements IPolicy {
                 for (Action a : world.getActions()) {
                     double temp = 0;
 
-                    for (Transaction t : world.getTransactions(s, a)) {
+                    for (Transition t : world.getTransitions(s, a)) {
                         Double u = lastUssfuless[t.state.getX()][t.state.getY()];
                         u = u != null ? u : 0;
 
@@ -63,4 +55,5 @@ public class IVpolicy implements IPolicy {
             }
         }
     }
+
 }

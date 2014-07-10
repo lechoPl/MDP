@@ -34,8 +34,8 @@ public class WorldPanel extends JPanel {
     protected Point selectedField = null;
     protected boolean edit = false;
 
-    protected boolean showStoredPolicy = false;
-    protected boolean showStoredUsability = false;
+    protected boolean showStoredPolicy = true;
+    protected boolean showStoredUsability = true;
     
     protected static Color fieldColor = new Color(238, 238, 238);
     protected static Color forbiddenColor = Color.GRAY;
@@ -234,7 +234,7 @@ public class WorldPanel extends JPanel {
                         g.drawString(reward, xPos + 5, yPos + g.getFontMetrics().getHeight() * 2);
                     }
 
-                    if (!edit && logic != null && !world.isForbidden(x, y) && !world.isTermina(new State(x, y))) {
+                    if (!edit && logic != null && !world.isForbidden(x, y) && !world.isTerminal(new State(x, y))) {
                         
                         if (logic.getOptimalActions() != null) {
                             g.setColor(policyColor);

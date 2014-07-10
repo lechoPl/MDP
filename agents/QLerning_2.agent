@@ -66,7 +66,7 @@ public class QLerning extends AbstractAgent implements IAgent {
     
     @Override
     public void step() {
-        if (world.isTermina(world.getCurrentState())) {
+        if (world.isTerminal(world.getCurrentState())) {
             world.reset();
         }
 
@@ -96,7 +96,7 @@ public class QLerning extends AbstractAgent implements IAgent {
 
         previousState = world.getCurrentState();
 
-        if (world.isTermina(world.getCurrentState())) {
+        if (world.isTerminal(world.getCurrentState())) {
             for (int i = 0; i < world.getActions().length; i++) {
                 Q[world.getCurrentState().getX()][world.getCurrentState().getY()][i] = world.getCurrentReward();
             }
